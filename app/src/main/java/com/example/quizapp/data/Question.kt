@@ -1,4 +1,4 @@
-package com.example.quizapp
+package com.example.quizapp.data
 
 import com.squareup.moshi.Json
 

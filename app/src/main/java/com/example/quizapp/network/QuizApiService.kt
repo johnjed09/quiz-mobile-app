@@ -1,8 +1,6 @@
 package com.example.quizapp.network
 
-import com.example.quizapp.Question
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.GET
 
