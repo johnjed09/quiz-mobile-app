@@ -5,15 +5,16 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.RadioButton
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import com.example.quizapp.network.RetrofitInstance
 import com.example.quizapp.ui.theme.QuizAppTheme
 import kotlinx.coroutines.GlobalScope
@@ -27,22 +28,24 @@ class MainActivity : ComponentActivity() {
             QuizAppTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background
+                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-                    Questions()
+                    val navController = rememberNavController()
+                    QuizNavHost(navController = navController)
+//                    Questions()
                 }
             }
         }
 
-        GlobalScope.launch {
-            try {
-                val result = RetrofitInstance.retrofitService.getQuizzes()
-
-                Log.d("jed: ", result.toString())
-            } catch(e: IOException) {
-                Log.d("jed error: ", e.toString())
-            }
-        }
+//        GlobalScope.launch {
+//            try {
+//                val result = RetrofitInstance.retrofitService.getQuizzes()
+//
+//                Log.d("jed: ", result.toString())
+//            } catch(e: IOException) {
+//                Log.d("jed error: ", e.toString())
+//            }
+//        }
     }
 }
 
@@ -72,8 +75,8 @@ fun Questions() {
 @Composable
 fun QuestionStatement(
     currentNumber: Number = 1,
-    currentQuestion: String = "What is the capital of the Philippines?",
-    options: List<String> = listOf("Manila", "Cebu City", "Maguinadanao", "Palawan"),
+    currentQuestion: String = "Question?",
+    options: List<String> = listOf("option 1", "option 2", "option 3", "option 4"),
 ) {
     Column {
         Row {
