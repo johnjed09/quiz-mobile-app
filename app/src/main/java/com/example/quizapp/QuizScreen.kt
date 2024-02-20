@@ -16,16 +16,16 @@ enum class QuizScreen {
     Start, Flavor, Pickup, Summary, AddQuiz
 }
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 @Composable
-fun AddQuestionScreen() {
+fun AddQuestionScreen(onNavigateToQuestions: () -> Unit) {
     var value by remember { mutableStateOf("") }
 
     QuizAppTheme {
         Column {
             TextField(value = value, onValueChange = { value = it }, label = { Text("Input question...") }, placeholder = { Text(text = "What is the capital of the Philippines?") })
-            FilledTonalButton(onClick = { }) {
-                Text("Tonal")
+            FilledTonalButton(onClick = { onNavigateToQuestions() }) {
+                Text("To Questions...")
             }
         }
 

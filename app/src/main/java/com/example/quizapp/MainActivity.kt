@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Questions() {
+fun Questions(onNavigateToAddQuiz: () -> Unit) {
     val questionSet: List<Question> = listOf(
         Question(
             "What is the capital of the Philippines?", listOf("abc", "def", "gef", "hij")
@@ -103,6 +103,6 @@ fun QuestionOptions(options: List<String>) {
 @Composable
 fun DefaultPreview() {
     QuizAppTheme {
-        Questions()
+//        Questions()
     }
 }
