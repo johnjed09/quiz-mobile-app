@@ -26,26 +26,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             QuizAppTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
                     QuizNavHost(navController = navController)
-//                    Questions()
                 }
             }
         }
-
-//        GlobalScope.launch {
-//            try {
-//                val result = RetrofitInstance.retrofitService.getQuizzes()
-//
-//                Log.d("jed: ", result.toString())
-//            } catch(e: IOException) {
-//                Log.d("jed error: ", e.toString())
-//            }
-//        }
     }
 }
 

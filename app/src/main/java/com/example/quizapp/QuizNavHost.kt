@@ -8,12 +8,12 @@ import androidx.navigation.compose.composable
 
 @Composable
 fun QuizNavHost(modifier: Modifier = Modifier, navController: NavHostController) {
-    NavHost(modifier = modifier, navController = navController, startDestination = "add_quiz" ) {
-        composable("add_quiz") {
-            AddQuestionScreen(onNavigateToQuestions ={navController.navigate("list_quiz")})
+    NavHost(modifier = modifier, navController = navController, startDestination = "create_quiz" ) {
+        composable("create_quiz") {
+            AddQuestionScreenRoute()
         }
-        composable("list_quiz") {
-            Questions(onNavigateToAddQuiz = {navController.navigate("add_quiz")})
-        }
+//        composable("list_quiz") {
+//            Questions()
+//        }
     }
 }

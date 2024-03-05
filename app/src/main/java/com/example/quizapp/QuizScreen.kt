@@ -3,50 +3,28 @@ package com.example.quizapp
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.quizapp.ui.theme.QuizAppTheme
 
-enum class QuizScreen {
-    Start, Flavor, Pickup, Summary, AddQuiz
-}
-
 @Composable
-fun AddQuestionScreen(onNavigateToQuestions: () -> Unit) {
-    var value by remember { mutableStateOf("") }
-
-    QuizAppTheme {
-        Column {
-            TextField(
-                value = value,
-                onValueChange = { value = it },
-                label = { Text("Input question...") },
-                placeholder = { Text(text = "What is the capital of the Philippines?") })
-            FilledTonalButton(onClick = { onNavigateToQuestions() }) {
-                Text("To Questions...")
-            }
-        }
-
-    }
+internal fun AddQuestionScreenRoute(addQuestionViewModel: QuickQuizViewModel = viewModel(factory = GeminiViewModelFactory)) {
+    AddQuestionScreen()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
 @Composable
-fun AddQuestionScreen() {
+fun AddQuestionScreen(onNavigateToQuestions: () -> Unit = {}) {
     var value by remember { mutableStateOf("") }
 
     QuizAppTheme {
@@ -57,26 +35,41 @@ fun AddQuestionScreen() {
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
                         titleContentColor = MaterialTheme.colorScheme.primary,
                     ),
-                    title = { Text("Question") }
+                    title = { Text("Create Questions") },
+                    actions = {
+                        IconButton(onClick = {}) {
+                            Icon(Icons.Filled.Check, contentDescription = "")
+                        }
+                    }
                 )
             }
         ) { innerPadding ->
             Column(
                 modifier = Modifier
-                    .padding(innerPadding)
-            ) {
+                    .padding(innerPadding),
+                horizontalAlignment = Alignment.End,
+
+                ) {
                 TextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = value,
                     onValueChange = { value = it },
-                    label = { Text("Input question...") },
-                    placeholder = { Text(text = "What is the capital of the Philippines?") })
+                    label = { Text("Input topic...") },
+                )
 
-                FilledTonalButton(onClick = { }) {
-                    Text("Add")
+                FilledTonalButton(
+                    onClick = { onNavigateToQuestions() },
+//                    modifier = Modifier.padding(10.dp)
+                ) {
+                    Text("Generate")
                 }
             }
         }
-
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AddQuestionScreenPreview() {
+    AddQuestionScreen()
 }

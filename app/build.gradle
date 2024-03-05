@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
 android {
@@ -78,4 +79,6 @@ dependencies {
     def nav_version = "2.7.7"
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
+    // Gemini
+    implementation("com.google.ai.client.generativeai:generativeai:0.2.0")
 }
