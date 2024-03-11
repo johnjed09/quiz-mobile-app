@@ -1,5 +1,6 @@
 package com.example.quizapp
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -7,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,12 +21,20 @@ import com.example.quizapp.ui.theme.QuizAppTheme
 
 @Composable
 internal fun AddQuestionScreenRoute(addQuestionViewModel: QuickQuizViewModel = viewModel(factory = GeminiViewModelFactory)) {
-    AddQuestionScreen()
+    val addQuestionUiState by addQuestionViewModel.uiState.collectAsState();
+
+    AddQuestionScreen(addQuestionUiState, onGenerateClick = { inputText ->
+        addQuestionViewModel.test(inputText)
+    })
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddQuestionScreen(onNavigateToQuestions: () -> Unit = {}) {
+fun AddQuestionScreen(
+    uiState: QuickQuizUiState = QuickQuizUiState.Loading,
+    onGenerateClick: (String) -> Unit = {},
+    onNavigateToQuestions: () -> Unit = {}
+) {
     var value by remember { mutableStateOf("") }
 
     QuizAppTheme {
@@ -58,7 +68,7 @@ fun AddQuestionScreen(onNavigateToQuestions: () -> Unit = {}) {
                 )
 
                 FilledTonalButton(
-                    onClick = { onNavigateToQuestions() },
+                    onClick = { onGenerateClick(value) },
 //                    modifier = Modifier.padding(10.dp)
                 ) {
                     Text("Generate")
