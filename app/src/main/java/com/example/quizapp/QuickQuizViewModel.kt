@@ -9,9 +9,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-enum class QuickQuizUiState {
-    Initial,
-    Loading
+sealed interface QuickQuizUiState {
+    object Initial : QuickQuizUiState;
+    object Loading : QuickQuizUiState;
+    data class Success(
+        val outputText: String
+    ) : QuickQuizUiState
 }
 
 class QuickQuizViewModel(private val generativeModel: GenerativeModel) : ViewModel() {
@@ -20,14 +23,19 @@ class QuickQuizViewModel(private val generativeModel: GenerativeModel) : ViewMod
     val uiState: StateFlow<QuickQuizUiState> = _uiState.asStateFlow();
 
     fun test(inputText: String) {
+        _uiState.value = QuickQuizUiState.Loading
+
+        val customPrompt = "Summarize the following text for me: ${inputText}" // Update prompt
+
         viewModelScope.launch {
             try {
-                generativeModel.generateContentStream("Summarize the following text for me: ${inputText}").collect { response ->
-                    Log.d("jed", "Test ${response.text}")
-
+                var outputText = ""
+                generativeModel.generateContentStream(customPrompt).collect { response ->
+                    outputText += response.text
+                    _uiState.value = QuickQuizUiState.Success(outputText)
                 }
             } catch (e: Exception) {
-                Log.d("jed", "Error")
+                Log.d("jed", "Error") // Uistate error handler
             }
         }
 
