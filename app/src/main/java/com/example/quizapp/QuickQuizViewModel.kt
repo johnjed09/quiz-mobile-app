@@ -25,13 +25,14 @@ class QuickQuizViewModel(private val generativeModel: GenerativeModel) : ViewMod
     fun test(inputText: String) {
         _uiState.value = QuickQuizUiState.Loading
 
-        val customPrompt = "Summarize the following text for me: ${inputText}" // Update prompt
+        val customPrompt = "Create multiple choice questions based on this topic: ${inputText}. Output as JSON." // Update prompt
 
         viewModelScope.launch {
             try {
                 var outputText = ""
                 generativeModel.generateContentStream(customPrompt).collect { response ->
                     outputText += response.text
+                    Log.d("jed", outputText) // TODO: Parse string to JSON or DAO.
                     _uiState.value = QuickQuizUiState.Success(outputText)
                 }
             } catch (e: Exception) {
