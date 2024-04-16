@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 
 sealed interface QuickQuizUiState {
     object Initial : QuickQuizUiState;
@@ -32,6 +33,11 @@ class QuickQuizViewModel(private val generativeModel: GenerativeModel) : ViewMod
                 var outputText = ""
                 generativeModel.generateContentStream(customPrompt).collect { response ->
                     outputText += response.text
+//                    val jsonObject = JSONObject(data)
+//                    {
+//                        question: String
+//                        answers: [String]
+//                    }
                     Log.d("jed", outputText) // TODO: Parse string to JSON or DAO.
                     _uiState.value = QuickQuizUiState.Success(outputText)
                 }
@@ -41,5 +47,7 @@ class QuickQuizViewModel(private val generativeModel: GenerativeModel) : ViewMod
         }
 
     }
-
 }
+
+@Serializable
+data class Data(val a: Int, val b: String)

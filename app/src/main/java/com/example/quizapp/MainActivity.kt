@@ -33,6 +33,6 @@ class MainActivity : ComponentActivity() {
                     QuizNavHost(navController = navController)
                 }
             }
-        }
+        } 
     }
 }
