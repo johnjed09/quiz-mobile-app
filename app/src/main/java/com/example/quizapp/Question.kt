@@ -1,8 +1,10 @@
 package com.example.quizapp
 
-import com.squareup.moshi.Json
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Question(
-    @field:Json(name = "question") val questionText: String,
-    @field:Json(name = "choices") val options: List<String>
+    val question: String,
+    val choices: List<String>,
+    val correctAnswer: String
 )

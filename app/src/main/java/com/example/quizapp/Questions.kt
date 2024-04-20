@@ -19,11 +19,13 @@ fun Questions(
     onNavigateToAddQuiz: () -> Unit = {},
     questionSet: List<Question> = listOf(
         Question(
-            "What is the capital of the Philippines?", listOf("abc", "def", "gef", "hij")
+            "What is the capital of the Philippines?", listOf("abc", "def", "gef", "hij"), "abc"
         ), Question(
-            "Who is the first president in the Philippines?", listOf("abc", "def", "gef", "hij")
+            "Who is the first president in the Philippines?",
+            listOf("abc", "def", "gef", "hij"),
+            "abc"
         ), Question(
-            "Where do Philippines located?", listOf("abc", "def", "gef", "hij")
+            "Where do Philippines located?", listOf("abc", "def", "gef", "hij"), "abc"
         )
     ),
 ) {
@@ -31,8 +33,8 @@ fun Questions(
         questionSet.forEachIndexed { i, e ->
             QuestionStatement(
                 currentNumber = i + 1,
-                currentQuestion = e.questionText,
-                options = e.options
+                currentQuestion = e.question,
+                options = e.choices
             )
         }
     }
