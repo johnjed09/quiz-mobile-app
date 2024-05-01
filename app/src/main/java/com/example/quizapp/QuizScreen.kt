@@ -1,6 +1,5 @@
 package com.example.quizapp
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -8,7 +7,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -25,9 +33,9 @@ import com.example.quizapp.ui.theme.QuizAppTheme
 @Composable
 internal fun AddQuestionScreenRoute(
     onNavigateToQuestions: () -> Unit,
-    addQuestionViewModel: QuickQuizViewModel = viewModel(factory = GeminiViewModelFactory)
+    addQuestionViewModel: QuickQuizViewModel = viewModel(factory = GeminiViewModelFactory),
 ) {
-    val addQuestionUiState by addQuestionViewModel.uiState.collectAsState();
+    val addQuestionUiState by addQuestionViewModel.uiState.collectAsState()
 
     AddQuestionScreen(addQuestionUiState, onGenerateClick = { inputText ->
         addQuestionViewModel.aiGenerateQuestions(inputText)
@@ -38,28 +46,23 @@ internal fun AddQuestionScreenRoute(
 @Composable
 fun AddQuestionScreen(
     uiState: QuickQuizUiState = QuickQuizUiState.Loading,
+    scoreViewModel: QuickQuizViewModel = viewModel(),
     onGenerateClick: (String) -> Unit = {},
     onNavigateToQuestions: () -> Unit = {}
 ) {
-    var value by remember { mutableStateOf("") }
+    val uiScoreState by scoreViewModel.uiScoreState.collectAsState()
 
     QuizAppTheme {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        titleContentColor = MaterialTheme.colorScheme.primary,
-                    ),
-                    title = { Text("Create Questions") },
-                    actions = {
-                        IconButton(onClick = {}) {
-                            Icon(Icons.Filled.Check, contentDescription = "")
-                        }
-                    }
-                )
-            }
-        ) { innerPadding ->
+        Scaffold(topBar = {
+            TopAppBar(colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                titleContentColor = MaterialTheme.colorScheme.primary,
+            ), title = { Text("Create Questions") }, actions = {
+                IconButton(onClick = { scoreViewModel.switchScoreboardOpen() }) {
+                    Icon(Icons.Filled.Check, contentDescription = "")
+                }
+            })
+        }) { innerPadding ->
             Column(
                 modifier = Modifier
                     .padding(innerPadding)
@@ -67,6 +70,12 @@ fun AddQuestionScreen(
                 horizontalAlignment = Alignment.End,
 
                 ) {
+                if (uiScoreState.isScoreBoardOpen) {
+                    AlertScore(uiScoreState.totalScore,
+                        onAlertOpen = { scoreViewModel.switchScoreboardOpen() })
+                }
+
+                var value by remember { mutableStateOf("") }
                 TextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = value,
@@ -78,8 +87,7 @@ fun AddQuestionScreen(
                     onClick = {
                         onGenerateClick(value)
                         onNavigateToQuestions()
-                    },
-                    modifier = Modifier.padding(10.dp)
+                    }, modifier = Modifier.padding(10.dp)
                 ) {
                     Text("Generate")
                 }

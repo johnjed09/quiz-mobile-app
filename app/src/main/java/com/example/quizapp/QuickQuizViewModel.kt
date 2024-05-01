@@ -7,6 +7,7 @@ import com.google.ai.client.generativeai.GenerativeModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
@@ -16,6 +17,10 @@ sealed interface QuickQuizUiState {
     data class Success(
         val questionSet: List<Question>
     ) : QuickQuizUiState
+
+    data class ScoreUiState(
+        val isScoreBoardOpen: Boolean = false, val totalScore: Int = 0
+    )
 }
 
 class QuickQuizViewModel(private val generativeModel: GenerativeModel) : ViewModel() {
@@ -37,16 +42,43 @@ class QuickQuizViewModel(private val generativeModel: GenerativeModel) : ViewMod
                 val response = generativeModel.generateContent(customPrompt)
 
                 outputText += response.text?.trim('`')?.removePrefix("json")
-//                Log.d("jed", outputText)
 
                 val questionSet = Json.decodeFromString<List<Question>>(outputText)
 
-//                questionSet.map { Log.d("jed", it.question) }
+                questionSet.map { Log.d("jed", it.toString()) }
 
                 _uiState.value = QuickQuizUiState.Success(questionSet)
             } catch (e: Exception) {
                 Log.d("jed error", "Error: $e")
             }
+        }
+    }
+
+    private val _uiScoreState = MutableStateFlow(QuickQuizUiState.ScoreUiState())
+    val uiScoreState: StateFlow<QuickQuizUiState.ScoreUiState> = _uiScoreState.asStateFlow()
+    fun increaseScore() {
+        _uiScoreState.update { currentState ->
+            currentState.copy(
+                totalScore = currentState.totalScore + 1
+            )
+        }
+    }
+
+    fun decreaseScore() {
+        _uiScoreState.update { currentState ->
+            if (currentState.totalScore == 0) return
+
+            currentState.copy(
+                totalScore = currentState.totalScore - 1
+            )
+        }
+    }
+
+    fun switchScoreboardOpen() {
+        _uiScoreState.update { currentState ->
+            currentState.copy(
+                isScoreBoardOpen = !currentState.isScoreBoardOpen
+            )
         }
     }
 }
