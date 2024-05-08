@@ -1,5 +1,6 @@
 package com.example.quizapp
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,8 +9,13 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,10 +42,10 @@ fun Questions(
     Column(modifier = modifier.fillMaxSize()) {
         questionSet.forEachIndexed { i, e ->
             QuestionStatement(
+                index = i,
                 currentNumber = i + 1,
                 currentQuestion = e.question,
                 options = e.choices,
-                correctAnswer = e.correctAnswer
             )
         }
     }
@@ -47,42 +53,58 @@ fun Questions(
 
 @Composable
 fun QuestionStatement(
+    index: Int,
     currentNumber: Number = 1,
     currentQuestion: String = "Question sentence.",
     options: List<String> = listOf("option 1", "option 2", "option 3", "option 4"),
-    correctAnswer: String = "option 1"
 ) {
     Column {
         Row {
             Text(text = "$currentNumber.")
             Text(text = currentQuestion)
         }
-        QuestionOptions(options = options, correctAnswer = correctAnswer)
+        QuestionOptions(index = index, options = options)
     }
 }
 
 @Composable
 fun QuestionOptions(
-    options: List<String>, correctAnswer: String, viewModel: QuickQuizViewModel = viewModel()
+    index: Int, options: List<String>, viewModel: QuickQuizViewModel = viewModel()
 ) {
     val (selectedOption, onOptionSelected) = remember { mutableStateOf("") }
+    val uiScoreState by viewModel.uiScoreState.collectAsState()
+    var isOptionCorrect by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isOptionCorrect) {
+        if (selectedOption.isBlank()) {
+            return@LaunchedEffect
+        }
+
+        if (isOptionCorrect) {
+            viewModel.increaseScore()
+        } else {
+            viewModel.decreaseScore()
+        }
+    }
 
     for (option in options) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .height(30.dp)
-                .selectableGroup()
-        ) {
-            RadioButton(selected = (option == selectedOption), onClick = {
-                onOptionSelected(option)
+        key(index) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .height(30.dp)
+                    .selectableGroup()
+            ) {
+                RadioButton(selected = (option == selectedOption), onClick = {
+                    onOptionSelected(option)
 
-                if (option == correctAnswer) viewModel.increaseScore()
-                else viewModel.decreaseScore()
-
-            })
-            Text(text = option)
+                    Log.d("jed select", "${uiScoreState.correctAnswers[index]} || ${option}")
+                    isOptionCorrect = uiScoreState.correctAnswers[index] == option
+                })
+                Text(text = option)
+            }
         }
+
     }
 }
 

@@ -19,7 +19,9 @@ sealed interface QuickQuizUiState {
     ) : QuickQuizUiState
 
     data class ScoreUiState(
-        val isScoreBoardOpen: Boolean = false, val totalScore: Int = 0
+        val isScoreBoardOpen: Boolean = false,
+        val totalScore: Int = 0,
+        val correctAnswers: List<String> = emptyList(),
     )
 }
 
@@ -27,6 +29,8 @@ class QuickQuizViewModel(private val generativeModel: GenerativeModel) : ViewMod
     private val _uiState: MutableStateFlow<QuickQuizUiState> =
         MutableStateFlow(QuickQuizUiState.Initial)
     val uiState: StateFlow<QuickQuizUiState> = _uiState.asStateFlow()
+    private val _uiScoreState = MutableStateFlow(QuickQuizUiState.ScoreUiState())
+    val uiScoreState: StateFlow<QuickQuizUiState.ScoreUiState> = _uiScoreState.asStateFlow()
 
     fun aiGenerateQuestions(inputText: String) {
         _uiState.value = QuickQuizUiState.Loading
@@ -45,7 +49,13 @@ class QuickQuizViewModel(private val generativeModel: GenerativeModel) : ViewMod
 
                 val questionSet = Json.decodeFromString<List<Question>>(outputText)
 
-                questionSet.map { Log.d("jed", it.toString()) }
+                // TODO: Refactor code block
+                questionSet.map {
+                    val newList = _uiScoreState.value.correctAnswers.toMutableList()
+                    newList.add(it.correctAnswer)
+
+                    updateSelectedAnswers(newList)
+                }
 
                 _uiState.value = QuickQuizUiState.Success(questionSet)
             } catch (e: Exception) {
@@ -54,8 +64,14 @@ class QuickQuizViewModel(private val generativeModel: GenerativeModel) : ViewMod
         }
     }
 
-    private val _uiScoreState = MutableStateFlow(QuickQuizUiState.ScoreUiState())
-    val uiScoreState: StateFlow<QuickQuizUiState.ScoreUiState> = _uiScoreState.asStateFlow()
+    private fun updateSelectedAnswers(newSelectedAnswers: List<String>) {
+        _uiScoreState.update { currentState ->
+            currentState.copy(
+                correctAnswers = newSelectedAnswers
+            )
+        }
+    }
+
     fun increaseScore() {
         _uiScoreState.update { currentState ->
             currentState.copy(
