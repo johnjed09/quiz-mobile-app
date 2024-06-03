@@ -49,18 +49,21 @@ class QuickQuizViewModel(private val generativeModel: GenerativeModel) : ViewMod
 
                 val questionSet = Json.decodeFromString<List<Question>>(outputText)
 
-                // TODO: Refactor code block
-                questionSet.map {
-                    val newList = _uiScoreState.value.correctAnswers.toMutableList()
-                    newList.add(it.correctAnswer)
-
-                    updateSelectedAnswers(newList)
-                }
-
+                updateCorrectAnswers(questionSet)
                 _uiState.value = QuickQuizUiState.Success(questionSet)
             } catch (e: Exception) {
                 Log.d("jed error", "Error: $e")
             }
+        }
+    }
+
+    private fun updateCorrectAnswers(questionSet: List<Question>) {
+        val newList = mutableListOf<String>()
+
+        questionSet.map {
+            newList.add(it.correctAnswer)
+
+            updateSelectedAnswers(newList)
         }
     }
 
