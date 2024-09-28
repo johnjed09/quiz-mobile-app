@@ -1,6 +1,6 @@
 package com.example.quizapp
 
-import android.util.Log
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -43,6 +43,7 @@ internal fun AddQuestionScreenRoute(
     })
 }
 
+@SuppressLint("InflateParams")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddQuestionScreen(
@@ -76,17 +77,17 @@ fun AddQuestionScreen(
                         onAlertOpen = { scoreViewModel.switchScoreboardOpen() })
                 }
 
-                var value by remember { mutableStateOf("") }
+                var topic by remember { mutableStateOf("") }
                 TextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = value,
-                    onValueChange = { value = it },
+                    value = topic,
+                    onValueChange = { topic = it },
                     label = { Text("Input topic...") },
                 )
 
                 FilledTonalButton(
                     onClick = {
-                        onGenerateClick(value)
+                        onGenerateClick(topic)
                         onNavigateToQuestions()
                     }, modifier = Modifier.padding(10.dp)
                 ) {
@@ -100,6 +101,10 @@ fun AddQuestionScreen(
 
                     is QuickQuizUiState.Success -> {
                         Questions(questionSet = uiState.questionSet)
+                    }
+
+                    is QuickQuizUiState.Error -> {
+                        QuickQuizErrorScreen(myError = uiState.myError)
                     }
                 }
             }
