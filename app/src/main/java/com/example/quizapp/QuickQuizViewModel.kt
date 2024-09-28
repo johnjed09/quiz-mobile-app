@@ -18,6 +18,10 @@ sealed interface QuickQuizUiState {
         val questionSet: List<Question>
     ) : QuickQuizUiState
 
+    data class Error(
+        val myError: Exception
+    ) : QuickQuizUiState
+
     data class ScoreUiState(
         val isScoreBoardOpen: Boolean = false,
         val totalScore: Int = 0,
@@ -29,6 +33,7 @@ class QuickQuizViewModel(private val generativeModel: GenerativeModel) : ViewMod
     private val _uiState: MutableStateFlow<QuickQuizUiState> =
         MutableStateFlow(QuickQuizUiState.Initial)
     val uiState: StateFlow<QuickQuizUiState> = _uiState.asStateFlow()
+
     private val _uiScoreState = MutableStateFlow(QuickQuizUiState.ScoreUiState())
     val uiScoreState: StateFlow<QuickQuizUiState.ScoreUiState> = _uiScoreState.asStateFlow()
 
@@ -52,7 +57,8 @@ class QuickQuizViewModel(private val generativeModel: GenerativeModel) : ViewMod
                 updateCorrectAnswers(questionSet)
                 _uiState.value = QuickQuizUiState.Success(questionSet)
             } catch (e: Exception) {
-                Log.d("jed error", "Error: $e")
+                Log.e("jed error", "Error: $e")
+                _uiState.value = QuickQuizUiState.Error(e)
             }
         }
     }

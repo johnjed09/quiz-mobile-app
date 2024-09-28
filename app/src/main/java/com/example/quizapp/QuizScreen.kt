@@ -1,8 +1,7 @@
 package com.example.quizapp
 
-import android.util.Log
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -29,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.quizapp.ui.theme.QuizAppTheme
 
@@ -45,6 +43,7 @@ internal fun AddQuestionScreenRoute(
     })
 }
 
+@SuppressLint("InflateParams")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddQuestionScreen(
@@ -78,17 +77,17 @@ fun AddQuestionScreen(
                         onAlertOpen = { scoreViewModel.switchScoreboardOpen() })
                 }
 
-                var value by remember { mutableStateOf("") }
+                var topic by remember { mutableStateOf("") }
                 TextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = value,
-                    onValueChange = { value = it },
+                    value = topic,
+                    onValueChange = { topic = it },
                     label = { Text("Input topic...") },
                 )
 
                 FilledTonalButton(
                     onClick = {
-                        onGenerateClick(value)
+                        onGenerateClick(topic)
                         onNavigateToQuestions()
                     }, modifier = Modifier.padding(10.dp)
                 ) {
@@ -103,10 +102,11 @@ fun AddQuestionScreen(
                     is QuickQuizUiState.Success -> {
                         Questions(questionSet = uiState.questionSet)
                     }
-                }
 
-                // TODO: Cont render of View components
-                AndroidView(modifier=Modifier.fillMaxSize(), factory={}, update = {} )
+                    is QuickQuizUiState.Error -> {
+                        QuickQuizErrorScreen(myError = uiState.myError)
+                    }
+                }
             }
         }
     }
